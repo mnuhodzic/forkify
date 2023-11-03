@@ -1,20 +1,22 @@
-import icons from "../../img/icons.svg";
+import icons from '../../img/icons.svg';
 // const Fraction = require('fractional').Fraction;
-import { Fraction } from "fractional";
+import { Fraction } from 'fractional';
 
 class RecipeView {
-  #parentElement = document.querySelector(".recipe");
+  #parentElement = document.querySelector('.recipe');
   #data;
+  #errorMessage = 'We could not find that recipe. Please try another one!';
+  #message = '';
 
   render(data) {
     this.#data = data;
     const markup = this.#generateMarkup();
     this.#clear();
-    this.#parentElement.insertAdjacentHTML("afterbegin", markup);
+    this.#parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
   #clear() {
-    this.#parentElement.innerHTML = "";
+    this.#parentElement.innerHTML = '';
   }
 
   renderSpinner() {
@@ -25,7 +27,35 @@ class RecipeView {
       </svg>
     </div> `;
     this.#clear();
-    this.#parentElement.insertAdjacentHTML("afterbegin", markup);
+    this.#parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+
+  renderError(message = this.#errorMessage) {
+    const markup = `
+    <div class="error">
+      <div>
+          <svg>
+              <use href="${icons}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+      <p>${message}</p>
+    </div>`;
+    this.#clear();
+    this.#parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+
+  renderMessage(message = this.#message) {
+    const markup = `
+    <div class="message">
+      <div>
+        <svg>
+          <use href="${icons}#icon-smile"></use>
+        </svg>
+      </div>
+      <p>${message}</p>
+    </div>`;
+    this.#clear();
+    this.#parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
   #generateMarkup() {
@@ -88,14 +118,14 @@ class RecipeView {
       <h2 class="heading--2">Recipe ingredients</h2>
       <ul class="recipe__ingredient-list">
       ${this.#data.ingredients
-        .map((ing) => {
+        .map(ing => {
           return `
         <li class="recipe__ingredient">
           <svg class="recipe__icon">
             <use href="${icons}#icon-check"></use>
           </svg>
           <div class="recipe__quantity">${
-            ing.quantity ? new Fraction(ing.quantity).toString() : ""
+            ing.quantity ? new Fraction(ing.quantity).toString() : ''
           }</div>
           <div class="recipe__description">
             <span class="recipe__unit">${ing.unit}</span>
@@ -103,7 +133,7 @@ class RecipeView {
           </div>
         </li>`;
         })
-        .join("")}
+        .join('')}
       </ul>
     </div>
 
@@ -127,6 +157,12 @@ class RecipeView {
         </svg>
       </a>
     </div>`;
+  }
+
+  addHandlerRender(handler) {
+    ['hashchange', 'DOMContentLoaded'].forEach(event =>
+      window.addEventListener(event, handler)
+    );
   }
 }
 
