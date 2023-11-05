@@ -46,7 +46,6 @@ export const loadSearchResults = async function (query) {
       };
     });
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };
@@ -57,4 +56,15 @@ export const getSearchResultsPage = function (page = state.search.page) {
   let end = page * state.search.resultsPerPage;
 
   return state.search.results.slice(start, end);
+};
+
+export const updateServings = function (newServings) {
+  const oldServings = state.recipe.servings;
+
+  state.recipe.ingredients.forEach(ing => {
+    ing.quantity = ing.quantity
+      ? (ing.quantity * newServings) / oldServings
+      : ing.quantity;
+  });
+  state.recipe.servings = newServings;
 };
