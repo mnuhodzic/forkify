@@ -10,6 +10,7 @@ export const state = {
     resultsPerPage: RES_PER_PAGE,
     page: 1,
   },
+  bookmarks: [],
 };
 
 export const loadRecipe = async function (id) {
@@ -26,6 +27,9 @@ export const loadRecipe = async function (id) {
       servings: recipe.servings,
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients,
+      bookmarked: state.bookmarks.some(bookmark => bookmark.id === recipe.id)
+        ? true
+        : false,
     };
   } catch (err) {
     throw err;
@@ -45,6 +49,7 @@ export const loadSearchResults = async function (query) {
         title: rec.title,
       };
     });
+    state.search.page = 1;
   } catch (error) {
     throw error;
   }
@@ -68,3 +73,26 @@ export const updateServings = function (newServings) {
   });
   state.recipe.servings = newServings;
 };
+
+export const toogleBookmark = function (recipe) {
+  // toogle bookmark option of currrent recipe
+  if (recipe.id === state.recipe.id)
+    state.recipe.bookmarked = !state.recipe.bookmarked;
+
+  // add bookmark
+  if (state.recipe.bookmarked) state.bookmarks.push(recipe);
+  // remove bookmark
+  else
+    state.bookmarks = state.bookmarks.filter(
+      bookmark => bookmark.id !== recipe.id
+    );
+
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+};
+
+const init = function () {
+  const storage = localStorage.getItem('bookmarks');
+  if (storage) state.bookmarks = JSON.parse(storage);
+};
+
+init();

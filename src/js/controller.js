@@ -4,6 +4,7 @@ import recipeView from './views/recipeView';
 import searchView from './views/searchView';
 import resultsView from './views/resultsView';
 import paginationView from './views/paginationView';
+import bookmarksView from './views/bookmarksView';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
@@ -20,6 +21,7 @@ const controlRecipes = async function () {
 
     // update results to mark selected result from search
     resultsView.update(model.getSearchResultsPage());
+    bookmarksView.update(model.state.bookmarks);
 
     // load recipe
     await model.loadRecipe(id);
@@ -65,11 +67,26 @@ const controlServings = function (newServings) {
   recipeView.update(model.state.recipe);
 };
 
+const controlBookmark = function () {
+  // toogle bookmark
+  model.toogleBookmark(model.state.recipe);
+  // update recipe
+  recipeView.update(model.state.recipe);
+  // render bookmarks
+  bookmarksView.render(model.state.bookmarks);
+};
+
+const controlRenderBookmark = function () {
+  bookmarksView.render(model.state.bookmarks);
+};
+
 const init = function () {
+  bookmarksView.addHandlerRender(controlRenderBookmark);
   recipeView.addHandlerRender(controlRecipes);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
   recipeView.addHandlerUpdateServings(controlServings);
+  recipeView.addHandlerBookmark(controlBookmark);
 };
 
 init();
